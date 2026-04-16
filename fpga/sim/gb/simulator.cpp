@@ -22,10 +22,14 @@ Simulator::Simulator(std::filesystem::path rom_path, std::filesystem::path bios_
         std::exit(1);
     }
     auto bios = read_file(bios_path);
+    if (bios.size() == 2304) {
+        bios.erase(bios.begin() + 256, bios.begin() + 512);
+    }
     if (bios.size() != 256 && bios.size() != 2048) {
         std::cerr << "ERROR: incorrect bios size: " << bios.size() << " (expected 256 or 2048)\n";
         std::exit(1);
     }
+    top->io_isCgb = (bios.size() == 2048);
     // Note: assumes little-endian
     memcpy(
         &this->top->rootp->SimGameboy__DOT__bootRom_ext__DOT__Memory,

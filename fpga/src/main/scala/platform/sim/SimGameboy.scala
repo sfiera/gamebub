@@ -13,6 +13,7 @@ object SimGameboy extends App {
 
 class SimGameboy extends Module {
   val io = IO(new Bundle {
+    val isCgb = Input(new Bool)
     val clockConfig = new ClockConfig
 
     val ppu = new PpuOutput
@@ -30,7 +31,7 @@ class SimGameboy extends Module {
     optimizeForSimulation = true,
   )
   val gameboy = Module(new Gameboy(gameboyConfig))
-  gameboy.io.isCgb := true.B
+  io.isCgb <> gameboy.io.isCgb
   io.clockConfig <> gameboy.io.clockConfig
   io.ppu <> gameboy.io.ppu
   io.joypad <> gameboy.io.joypad
