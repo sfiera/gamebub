@@ -171,7 +171,7 @@ targets:
     tools:
       verilator:
         verilator_options: [
-            "-CFLAGS \"`pkg-config sdl2 --cflags`\"",
-            "-LDFLAGS \"`pkg-config sdl2 --libs`\"",
+            "-CFLAGS \"-std=c++17 `pkg-config sdl2 --cflags`\"",
+            "-LDFLAGS \"-std=c++17 `pkg-config sdl2 --libs`\"",
             "-Wno-WIDTHEXPAND",
         ]
