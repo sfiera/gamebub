@@ -3,7 +3,7 @@ use time::{Date, OffsetDateTime, Time};
 /// GBA Rtc state
 ///
 /// All in BCD
-#[derive(Copy, Clone, Debug)]
+#[derive(Copy, Clone, Debug, PartialEq)]
 pub struct RtcState {
     /// 00 to 99 (representing 2000 to 2099)
     pub year: u8,
@@ -124,4 +124,62 @@ fn encode_bcd(data: u8) -> u8 {
     let ones = data % 10;
     let tens: u8 = data / 10;
     (tens << 4) | ones
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use time::Month;
+
+    #[test]
+    fn test_sunday_based() -> Result<(), Box<dyn std::error::Error>> {
+        let rtc = RtcState {
+            year: 0x26,
+            month: 0x09,
+            day: 0x14,
+            weekday: 0x01,
+            hour: 0x21,
+            minute: 0x06,
+            second: 0x05,
+            status: 0x40,
+        };
+        let (dt, off) = rtc.to_offset_date_time().unwrap();
+        assert_eq!(
+            dt,
+            OffsetDateTime::new_utc(
+                Date::from_calendar_date(2026, Month::September, 14)?,
+                Time::from_hms(21, 06, 05)?
+            )
+        );
+        assert_eq!(off, 0);
+        let rtc2 = RtcState::from_offset_date_time(dt, off);
+        assert_eq!(rtc, rtc2);
+        Ok(())
+    }
+
+    #[test]
+    fn test_monday_based() -> Result<(), Box<dyn std::error::Error>> {
+        let rtc = RtcState {
+            year: 0x26,
+            month: 0x09,
+            day: 0x14,
+            weekday: 0x00,
+            hour: 0x21,
+            minute: 0x06,
+            second: 0x05,
+            status: 0x40,
+        };
+        let (dt, off) = rtc.to_offset_date_time().unwrap();
+        assert_eq!(
+            dt,
+            OffsetDateTime::new_utc(
+                Date::from_calendar_date(2026, Month::September, 14)?,
+                Time::from_hms(21, 06, 05)?
+            )
+        );
+        assert_eq!(off, 6);
+        let rtc2 = RtcState::from_offset_date_time(dt, off);
+        assert_eq!(rtc, rtc2);
+        Ok(())
+    }
 }

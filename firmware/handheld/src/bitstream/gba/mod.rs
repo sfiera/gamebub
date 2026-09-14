@@ -6,7 +6,6 @@ use std::{
 };
 
 use esp_idf_svc::hal::units::Hertz;
-use rtc::RtcState;
 use thiserror::Error;
 
 use crate::{
@@ -18,6 +17,10 @@ use crate::{
     kvs, ui,
 };
 
+use gamebub_lib::{
+    bitstream::gba::rtc::RtcState
+};
+
 use super::{
     util::color_correction::{self, ColorCorrection},
     Bitstream,
@@ -25,7 +28,6 @@ use super::{
 use save_type_detector::SaveTypeDetector;
 
 mod game_db;
-mod rtc;
 mod save_type_detector;
 
 const SYSTEM_CLOCK_RATE: Hertz = Hertz(16 * 1024 * 1024);
